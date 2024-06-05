@@ -8,10 +8,11 @@ const ARENA_HEIGHT: u32 = 10;
 
 fn main() {
     App::new()
+        .insert_resource(ClearColor(Color::rgb(0.7, 0.7, 0.7)))
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "SssssSnake!".into(),
-                name: Some("bevy.app".into()),
+                name: Some("sssssnakebevy.app".into()),
                 resolution: (500., 500.).into(),
                 // Tells wasm not to override default event handling, like F5, Ctrl+R etc.
                 prevent_default_event_handling: false,
