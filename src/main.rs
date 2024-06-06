@@ -2,13 +2,15 @@ use bevy::prelude::*;
 
 const SNAKE_HEAD_COLOR: Color = Color::rgb(0.7, 0.7, 0.7);
 // const SNAKE_BODY_COLOR: Color = Color::rgb(0.6, 0.6, 0.6);
-// const FOOD_COLOR: Color = Color::rgb(0.3, 0.8, 0.5);
-const ARENA_WIDTH: u32 = 10;
-const ARENA_HEIGHT: u32 = 10;
+const FOOD_COLOR: Color = Color::rgb(0.3, 0.8, 0.5);
+const SET_ARENA_WIDTH: u32 = 10;
+const SET_ARENA_HEIGHT: u32 = 10;
+const ARENA_WIDTH:f32 = SET_ARENA_WIDTH as f32;
+const ARENA_HEIGHT:f32 = SET_ARENA_HEIGHT as f32;
 
 fn main() {
     App::new()
-        .insert_resource(ClearColor(Color::rgb(0.7, 0.7, 0.7)))
+        .insert_resource(ClearColor(Color::rgb(0.09, 0.09, 0.09)))
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "SssssSnake!".into(),
@@ -60,7 +62,7 @@ fn spawn_snake(mut commands: Commands) {
             ..default()
         },
         Position { x: 3, y: 3 },
-        Size::square(0.8),
+        Size { side: 0.8 },
         SnakeHead,
     ));
 }
@@ -93,39 +95,30 @@ struct Position {
 
 #[derive(Component)]
 struct Size {
-    width: f32,
-    height: f32,
-}
-impl Size {
-    pub fn square(x: f32) -> Self {
-        Self {
-            width: x,
-            height: x,
-        }
-    }
+    side: f32,
 }
 
 fn size_scailing(windows: Query<&Window>, mut query: Query<(&Size, &mut Transform)>) {
     let win = windows.single();
     for (sprite_size, mut transform) in &mut query {
         transform.scale = Vec3::new(
-            sprite_size.width / ARENA_WIDTH as f32 * win.width(),
-            sprite_size.height / ARENA_HEIGHT as f32 * win.height(),
+            sprite_size.side / ARENA_WIDTH as f32 * win.width(),
+            sprite_size.side / ARENA_HEIGHT as f32 * win.height(),
             1.0,
         );
     }
 }
 
-fn position_translation(windows: Query<&Window>, mut q: Query<(&Position, &mut Transform)>) {
+fn position_translation(windows: Query<&Window>, mut query: Query<(&Position, &mut Transform)>) {
     fn convert(pos: f32, bound_window: f32, bound_game: f32) -> f32 {
         let tile_size = bound_window / bound_game;
         pos / bound_game * bound_window - (bound_window / 2.) + (tile_size / 2.)
     }
     let window = windows.single();
-    for (pos, mut transform) in q.iter_mut() {
+    for (pos, mut transform) in &mut query {
         transform.translation = Vec3::new(
-            convert(pos.x as f32, window.width(), ARENA_WIDTH as f32),
-            convert(pos.y as f32, window.height(), ARENA_HEIGHT as f32),
+            convert(pos.x as f32, window.width(), ARENA_WIDTH),
+            convert(pos.y as f32, window.height(), ARENA_HEIGHT),
             0.0,
         );
     }
