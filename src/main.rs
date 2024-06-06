@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use rand::random;
 
 const SNAKE_HEAD_COLOR: Color = Color::rgb(0.7, 0.7, 0.7);
 // const SNAKE_BODY_COLOR: Color = Color::rgb(0.6, 0.6, 0.6);
@@ -11,6 +12,7 @@ const ARENA_HEIGHT:f32 = SET_ARENA_HEIGHT as f32;
 fn main() {
     App::new()
         .insert_resource(ClearColor(Color::rgb(0.09, 0.09, 0.09)))
+        .insert_resource(Time::<Fixed>::from_seconds(1.))
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "SssssSnake!".into(),
@@ -27,6 +29,7 @@ fn main() {
             ..default()
         }))
         .add_systems(Startup, (setup_camera, spawn_snake))
+        .add_systems(FixedUpdate, food_spawner)
         .add_systems(Update, snake_movement)
         .add_systems(PostUpdate, (position_translation, size_scailing))
         .run();
@@ -122,4 +125,25 @@ fn position_translation(windows: Query<&Window>, mut query: Query<(&Position, &m
             0.0,
         );
     }
+}
+
+#[derive(Component)]
+struct Food;
+
+fn food_spawner(mut commands: Commands) {
+    commands.spawn((
+        SpriteBundle {
+            sprite: Sprite {
+                color: FOOD_COLOR,
+                ..default()
+            },
+            ..default()
+        },
+        Position {
+            x: (random::<f32>() * ARENA_WIDTH) as i32,
+            y: (random::<f32>() * ARENA_HEIGHT) as i32,
+        },
+        Size { side: 0.5 },
+        Food,
+    ));
 }
