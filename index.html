@@ -1,16 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sssssnake</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main>
+      <h1><span>Sssss</span>nake</h1>
+      <p>A snake demo using Bevy 0.13, for more info check <a href="https://github.com/gabriel-eb/bevy-wasm">repo info</a>.</p>
+      <br><br>
+      <h3>Controls:</h3>
+      <p>Play with WASD or arrow keys.</p>
+      <section></section>
+      <script type="module">
+        import init from "./sssssnake.js";
 
-<body style="margin: 0px;">
-  <script type="module">
-    import init from './sssssnake.js'
-
-    init().catch((error) => {
-      if (!error.message.startsWith("Using exceptions for control flow, don't mind me. This isn't actually an error!")) {
-        throw error;
-      }
-    });
-  </script>
-</body>
-
-</html
+        init().catch((error) => {
+          if (
+            !error.message.startsWith(
+              "Using exceptions for control flow, don't mind me. This isn't actually an error!"
+            )
+          ) {
+            throw error;
+          }
+        });
+      </script>
+    </main>
+  </body>
+</html>
