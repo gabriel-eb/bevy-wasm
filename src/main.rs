@@ -1,11 +1,12 @@
 use bevy::prelude::*;
 use rand::random;
 
+const BG_COLOR: Color = Color::rgb(0.09, 0.09, 0.09);
 const SNAKE_HEAD_COLOR: Color = Color::rgb(0.7, 0.7, 0.7);
 const SNAKE_BODY_COLOR: Color = Color::rgb(0.5, 0.5, 0.5);
 const FOOD_COLOR: Color = Color::rgb(0.3, 0.8, 0.5);
-const SET_ARENA_WIDTH: u32 = 10;
-const SET_ARENA_HEIGHT: u32 = 10;
+const SET_ARENA_WIDTH: u32 = 20;
+const SET_ARENA_HEIGHT: u32 = 20;
 const ARENA_WIDTH: f32 = SET_ARENA_WIDTH as f32;
 const ARENA_HEIGHT: f32 = SET_ARENA_HEIGHT as f32;
 
@@ -13,8 +14,8 @@ fn main() {
     App::new()
         .insert_resource(SnakeSegments::default())
         .insert_resource(LastTailPosition::default())
-        .insert_resource(Time::<Fixed>::from_seconds(0.4))
-        .insert_resource(ClearColor(Color::rgb(0.09, 0.09, 0.09)))
+        .insert_resource(Time::<Fixed>::from_seconds(0.25))
+        .insert_resource(ClearColor(BG_COLOR))
         .add_event::<GrowthEvent>()
         .add_event::<GameOverEvent>()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
@@ -53,7 +54,7 @@ struct MyCameraMaker;
 fn setup_camera(mut commands: Commands) {
     commands.spawn((
         Camera2dBundle {
-            transform: Transform::from_xyz(100.0, 200.0, 0.0),
+            transform: Transform::from_xyz(0.0, 0.0, 0.0),
             ..default()
         },
         MyCameraMaker,
@@ -190,11 +191,19 @@ fn position_translation(windows: Query<&Window>, mut query: Query<(&Position, &m
 #[derive(Component)]
 struct Food;
 
-fn food_spawner(mut commands: Commands, query: Query<&Position, With<SnakeSegment>>) {
+fn food_spawner(
+    mut commands: Commands,
+    food: Query<&Food>,
+    body_pos: Query<&Position, With<SnakeSegment>>,
+) {
     let position_x = (random::<f32>() * ARENA_WIDTH) as i32;
     let position_y = (random::<f32>() * ARENA_HEIGHT) as i32;
 
-    for pos in &query {
+    if food.iter().count() > 9 {
+        return;
+    }
+
+    for pos in &body_pos {
         if position_x == pos.x && position_y == pos.y {
             return;
         }
