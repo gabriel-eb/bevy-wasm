@@ -7,7 +7,7 @@ This is a demo for the snake game using [Bevy 0.13](https://bevyengine.org/) fol
 
 ## Info
 ### Bevy
-
+[Bevy](https://bevyengine.org/) is a game engine in [Rust](https://www.rust-lang.org/es) that uses Entity Component System pattern to develope video games.
 
 ### WebAssembly
 [WebAssembly](https://webassembly.org/) is an amazing tool, basically, it lets you create a virtual machine to compile bineries for web. You can choose to have it for client or server side, this give you a lot of flexibility and power to create applications in a new way. 
@@ -39,7 +39,7 @@ cargo build --release --target wasm32-unknown-unknown
 It takes a while to build, once is done, a new directory appear: `./target/wasm32-unknown-unknown/release`. In there is the wasm file (you can test it by running an http server in there). Now you can prepare the project for a GitHub Page manually or with the next section.
 
 ### (Optional) Use wasm-bindgen CLI for GitHub pages
-[GitHub Pages](https://pages.github.com/) lets you host client side websites and, with the wasm-bindgen CLI tool, everything you need to get this running is done by the tool.
+With [GitHub Pages](https://pages.github.com/), you can host client side websites and the wasm-bindgen CLI tool assists you preparing the files to run the game in the client side.
 
 First, install the tool
 ```sh
