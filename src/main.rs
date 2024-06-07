@@ -1,4 +1,4 @@
-use bevy::{ecs::query, prelude::*};
+use bevy::prelude::*;
 use rand::random;
 
 const SNAKE_HEAD_COLOR: Color = Color::rgb(0.7, 0.7, 0.7);
@@ -294,7 +294,6 @@ fn snake_growth(
 
 #[derive(Event)]
 struct GameOverEvent;
-
 
 fn game_over(
     mut commands: Commands,
