@@ -1,4 +1,4 @@
-use bevy::prelude::*;
+use bevy::{ecs::query, prelude::*};
 use rand::random;
 
 const SNAKE_HEAD_COLOR: Color = Color::rgb(0.7, 0.7, 0.7);
@@ -16,6 +16,7 @@ fn main() {
         .insert_resource(Time::<Fixed>::from_seconds(0.4))
         .insert_resource(ClearColor(Color::rgb(0.09, 0.09, 0.09)))
         .add_event::<GrowthEvent>()
+        .add_event::<GameOverEvent>()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
                 title: "SssssSnake!".into(),
@@ -39,6 +40,7 @@ fn main() {
                 snake_movement_input.before(snake_movement),
                 snake_eating.after(snake_movement),
                 snake_growth.after(snake_eating),
+                game_over.after(snake_movement),
             ),
         )
         .add_systems(PostUpdate, (position_translation, size_scailing))
@@ -91,10 +93,11 @@ fn spawn_snake(mut commands: Commands, mut segments: ResMut<SnakeSegments>) {
 }
 
 fn snake_movement(
-    segments: ResMut<SnakeSegments>,
-    mut tail_pos: ResMut<LastTailPosition>,
     mut snake: Query<(Entity, &SnakeHead)>,
     mut positions: Query<&mut Position>,
+    mut game_over_writer: EventWriter<GameOverEvent>,
+    mut tail_pos: ResMut<LastTailPosition>,
+    segments: ResMut<SnakeSegments>,
 ) {
     if let Some((head_entity, head)) = snake.iter_mut().next() {
         let body_positions = segments
@@ -109,6 +112,14 @@ fn snake_movement(
             Direction::Up => head_pos.y += 1,
             Direction::Down => head_pos.y -= 1,
         };
+        if head_pos.x < 0
+            || head_pos.y < 0
+            || head_pos.x as u32 >= SET_ARENA_WIDTH
+            || head_pos.y as u32 >= SET_ARENA_HEIGHT
+            || body_positions.contains(&head_pos)
+        {
+            game_over_writer.send(GameOverEvent);
+        }
         body_positions
             .iter()
             .zip(segments.0.iter().skip(1))
@@ -179,7 +190,16 @@ fn position_translation(windows: Query<&Window>, mut query: Query<(&Position, &m
 #[derive(Component)]
 struct Food;
 
-fn food_spawner(mut commands: Commands) {
+fn food_spawner(mut commands: Commands, query: Query<&Position, With<SnakeSegment>>) {
+    let position_x = (random::<f32>() * ARENA_WIDTH) as i32;
+    let position_y = (random::<f32>() * ARENA_HEIGHT) as i32;
+
+    for pos in &query {
+        if position_x == pos.x && position_y == pos.y {
+            return;
+        }
+    }
+
     commands.spawn((
         SpriteBundle {
             sprite: Sprite {
@@ -189,8 +209,8 @@ fn food_spawner(mut commands: Commands) {
             ..default()
         },
         Position {
-            x: (random::<f32>() * ARENA_WIDTH) as i32,
-            y: (random::<f32>() * ARENA_HEIGHT) as i32,
+            x: position_x,
+            y: position_y,
         },
         Size { side: 0.5 },
         Food,
@@ -269,5 +289,24 @@ fn snake_growth(
 ) {
     if growth_reader.read().into_iter().next().is_some() {
         body.0.push(spawn_segment(commands, tail_pos.0.unwrap()));
+    }
+}
+
+#[derive(Event)]
+struct GameOverEvent;
+
+
+fn game_over(
+    mut commands: Commands,
+    mut reader: EventReader<GameOverEvent>,
+    segments_res: ResMut<SnakeSegments>,
+    food: Query<Entity, With<Food>>,
+    segments: Query<Entity, With<SnakeSegment>>,
+) {
+    if reader.read().into_iter().next().is_some() {
+        for ent in food.iter().chain(segments.iter()) {
+            commands.entity(ent).despawn();
+        }
+        spawn_snake(commands, segments_res);
     }
 }
