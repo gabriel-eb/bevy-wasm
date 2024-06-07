@@ -16,3 +16,14 @@ opt-level = 1
 # Enable high optimizations for dependencies (incl. Bevy)
 [profile.dev.package."*"]
 opt-level = 3
+
+[profile.release]
+opt-level = 'z'
+lto = true
+codegen-units = 1
+
+# Run for local wasm
+# cargo run --target wasm32-unknown-unknown
+# cargo run --target wasm32-unknown-unknown
+# [target.wasm32-unknown-unknown]
+# runner = "wasm-server-runner"
