@@ -6,6 +6,7 @@
 
 body {
     background-color: rgb(0.09, 0.09, 0.09);
+    height: 100vh;
 }
 
 main {
@@ -30,6 +31,51 @@ p {
     margin: 0.5rem 0 2rem 0;
 }
 
-script {
+canvas {
     border: 2px gray dashed;
+}
+
+#loader {
+    min-width: 120px;
+    min-height: 120px;
+    border: 5px solid #AAA;
+    border-bottom-color: transparent;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+footer {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    color: #777;
+}
+
+footer > p {
+    margin: auto;
+}
+
+footer > p > a {
+    text-decoration: none;
+    color: #888;
+}
+
+footer > p  > a:hover {
+    color: #DDD;
+}
+
+
+footer > p > a:visited {
+    color: #555;
 }

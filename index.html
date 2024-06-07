@@ -9,24 +9,37 @@
   <body>
     <main>
       <h1><span>Sssss</span>nake</h1>
-      <p>A snake demo using Bevy 0.13, for more info check <a href="https://github.com/gabriel-eb/bevy-wasm">repo info</a>.</p>
-      <br><br>
+      <p>
+        A snake demo using Bevy 0.13, for more info check
+        <a href="https://github.com/gabriel-eb/bevy-wasm">repo info</a>.
+      </p>
+      <br /><br />
       <h3>Controls:</h3>
       <p>Play with WASD or arrow keys.</p>
-      <section></section>
-      <script type="module">
-        import init from "./sssssnake.js";
-
-        init().catch((error) => {
-          if (
-            !error.message.startsWith(
-              "Using exceptions for control flow, don't mind me. This isn't actually an error!"
-            )
-          ) {
-            throw error;
-          }
-        });
-      </script>
+      <section id="game-container">
+        <span id="loader"></span>
+      </section>
     </main>
+    <footer>
+      <p>2024,&nbsp; <a href="https://github.com/gabriel-eb" target=”_blank”>gabriel-eb</a></p>
+    </footer>
+    <script type="module">
+      import init from "./sssssnake.js";
+
+      init().catch((error) => {
+        if (
+          !error.message.startsWith(
+            "Using exceptions for control flow, don't mind me. This isn't actually an error!"
+          )
+        ) {
+          throw error;
+        }
+      }).finally(() => {
+        const firstCanvas = document.getElementsByTagName("canvas")[0];
+        const loader = document.getElementById("loader");
+        const containter = document.getElementById("game-container");
+        containter.replaceChild(firstCanvas, loader);
+      });
+    </script>
   </body>
 </html>
